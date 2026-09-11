@@ -1,51 +1,119 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.ArrayList,java.util.List" %>
+<%@ include file="WEB-INF/jspf/conexion.jspf" %>
+<%!
+    private String cifrarContrasena(String password, String salt) {
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            digest.update(salt.getBytes("UTF-8"));
+            byte[] hash = digest.digest(password.getBytes("UTF-8"));
+            StringBuilder hex = new StringBuilder();
+            for (byte b : hash) {
+                hex.append(String.format("%02x", b));
+            }
+            return hex.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+%>
+<%
+    String error = (String) session.getAttribute("errorLogin");
+    session.removeAttribute("errorLogin");
+
+    String correo = request.getParameter("correo");
+    if (correo != null) {
+        String contrasena = request.getParameter("contrasena");
+        Connection con = null;
+        try {
+            con = obtenerConexion();
+            String sql = "SELECT id_usuario, correo, contrasena, salt, estado FROM usuario WHERE correo = ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, correo.trim().toLowerCase());
+            ResultSet rs = pstmt.executeQuery();
+
+            boolean valido = false;
+            if (rs.next()) {
+                String hashBD = rs.getString("contrasena");
+                String saltBD = rs.getString("salt");
+                if (saltBD != null && hashBD != null) {
+                    String hashCalculado = cifrarContrasena(contrasena, saltBD);
+                    valido = hashCalculado != null && hashCalculado.equals(hashBD);
+                }
+
+                if (valido && "Inactiva".equals(rs.getString("estado"))) {
+                    error = "Tu cuenta está inactiva.";
+                } else if (valido) {
+                    // Guardamos en la sesión: identificador del usuario y sus roles
+                    session.setAttribute("usuarioLogueado", rs.getString("correo"));
+                    session.setAttribute("idUsuario", rs.getInt("id_usuario"));
+
+                    List<String> roles = new ArrayList<String>();
+                    String sqlRoles = "SELECT r.nombre FROM rol r INNER JOIN usuario_rol ur ON ur.id_rol = r.id_rol WHERE ur.id_usuario = ?";
+                    PreparedStatement psRoles = con.prepareStatement(sqlRoles);
+                    psRoles.setInt(1, rs.getInt("id_usuario"));
+                    ResultSet rsRoles = psRoles.executeQuery();
+                    while (rsRoles.next()) {
+                        roles.add(rsRoles.getString("nombre").toLowerCase());
+                    }
+                    rsRoles.close();
+                    psRoles.close();
+                    session.setAttribute("usuarioRoles", roles);
+
+                    response.sendRedirect("index.jsp");
+                    return;
+                }
+            }
+            if (!valido) {
+                error = "Credenciales incorrectas.";
+            }
+            rs.close();
+            pstmt.close();
+        } catch (Exception e) {
+            error = "Error de conexión con la base de datos.";
+            e.printStackTrace();
+        } finally {
+            cerrarConexion(con);
+        }
+    }
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - Inmobiliaria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; padding: 50px; }
-        .contenedor { max-width: 400px; margin: auto; border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input[type="email"], input[type="password"] { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background-color: #0056b3; color: white; border: none; cursor: pointer; }
-        .alerta { color: red; margin-bottom: 15px; font-weight: bold; }
+        body { background-color: #f8f9fa; }
+        .contenedor { max-width: 440px; margin: 60px auto; }
     </style>
 </head>
 <body>
     <div class="contenedor">
-        <h2>Ingresar al Sistema</h2>
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">Ingresar al Sistema</h2>
 
-        <%-- Scriptlet para mostrar el error si el usuario falla el login --%>
-        <% 
-            String error = (String) session.getAttribute("errorLogin");
-            if (error != null) { 
-        %>
-            <div class="alerta"><%= error %></div>
-        <% 
-                session.removeAttribute("errorLogin"); // Lo borramos para que no salga siempre
-            } 
-        %>
+                <% if (error != null) { %>
+                    <div class="alert alert-danger"><%= error %></div>
+                <% } %>
 
-        <form action="auth" method="POST">
-            <!-- Esta variable oculta le dice al Servlet qué método ejecutar -->
-            <input type="hidden" name="accion" value="login">
-            
-            <div class="form-group">
-                <label for="correo">Correo Electrónico:</label>
-                <input type="email" id="correo" name="correo" required>
+                <form method="POST" action="login.jsp" novalidate>
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo Electrónico:</label>
+                        <input type="email" class="form-control" id="correo" name="correo" value="<%= correo != null ? correo.trim() : "" %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contrasena" class="form-label">Contraseña:</label>
+                        <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                </form>
+                <p class="text-center mt-3 mb-0">¿No tienes cuenta? <a href="registro.jsp">Regístrate aquí</a></p>
             </div>
-            
-            <div class="form-group">
-                <label for="contrasena">Contraseña:</label>
-                <input type="password" id="contrasena" name="contrasena" required>
-            </div>
-            
-            <button type="submit">Iniciar Sesión</button>
-        </form>
-        <p style="text-align: center;">¿No tienes cuenta? <a href="registro.jsp">Regístrate aquí</a></p>
+        </div>
     </div>
 </body>
 </html>
