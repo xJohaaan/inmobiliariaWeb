@@ -45,11 +45,23 @@
                 String salt = generarSalt();
                 String hash = cifrarContrasena(contrasena, salt);
                 String sql = "INSERT INTO usuario (correo, contrasena, salt, estado) VALUES (?, ?, ?, 'Activa')";
-                PreparedStatement pstmt = con.prepareStatement(sql);
+                PreparedStatement pstmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 pstmt.setString(1, correo.trim().toLowerCase());
                 pstmt.setString(2, hash);
                 pstmt.setString(3, salt);
                 int filas = pstmt.executeUpdate();
+                if (filas > 0) {
+                    ResultSet llaves = pstmt.getGeneratedKeys();
+                    if (llaves.next()) {
+                        int idNuevo = llaves.getInt(1);
+                        PreparedStatement psRol = con.prepareStatement(
+                            "INSERT INTO usuario_rol (id_usuario, id_rol) VALUES (?, (SELECT id_rol FROM rol WHERE nombre='cliente'))");
+                        psRol.setInt(1, idNuevo);
+                        psRol.executeUpdate();
+                        psRol.close();
+                    }
+                    llaves.close();
+                }
                 mensaje = (filas > 0) ? "Registro exitoso" : "Error: No se pudo registrar el usuario.";
             } catch (SQLException e) {
                 if (e.getSQLState() != null && e.getSQLState().startsWith("23")) {
@@ -73,16 +85,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Inmobiliaria</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; }
-        .contenedor { max-width: 440px; margin: 60px auto; }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="css/estilos.css" rel="stylesheet">
 </head>
-<body>
-    <div class="contenedor">
-        <div class="card shadow">
-            <div class="card-body p-4">
-                <h2 class="text-center mb-4">Crear Cuenta</h2>
+<body class="page-auth">
+    <div class="card card-auth">
+        <div class="card-body p-4">
+            <a class="auth-logo" href="index.jsp"><i class="bi bi-building-check"></i> Inmobiliaria Arco Real</a>
+            <h2 class="text-center mb-4 fs-4">Crear Cuenta</h2>
 
                 <% if (mensaje != null) { %>
                     <div class="alert <%= mensaje.contains("Error") ? "alert-danger" : "alert-success" %>"><%= mensaje %></div>
@@ -103,6 +113,5 @@
                 <p class="text-center mt-3 mb-0">¿Ya tienes cuenta? <a href="login.jsp">Inicia sesión aquí</a></p>
             </div>
         </div>
-    </div>
 </body>
 </html>

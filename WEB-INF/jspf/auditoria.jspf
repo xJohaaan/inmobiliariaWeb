@@ -1,0 +1,20 @@
+<%--
+    auditoria.jspf: declara el método registrarAuditoria(con, idUsuario, accion).
+    Debe incluirse DESPUÉS de conexion.jspf (usa Connection).
+--%>
+<%!
+    public void registrarAuditoria(Connection con, Integer idUsuario, String accion) {
+        java.sql.PreparedStatement ps = null;
+        try {
+            String sql = "INSERT INTO auditoria (id_usuario, accion_realizada) VALUES (?, ?)";
+            ps = con.prepareStatement(sql);
+            if (idUsuario != null) { ps.setInt(1, idUsuario); } else { ps.setNull(1, java.sql.Types.INTEGER); }
+            ps.setString(2, accion);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (ps != null) { try { ps.close(); } catch (Exception e) { } }
+        }
+    }
+%>

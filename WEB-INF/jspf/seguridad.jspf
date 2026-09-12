@@ -1,0 +1,27 @@
+<%--
+    seguridad.jspf: valida que haya sesión activa y el/los roles requeridos.
+    Uso (al inicio de cada JSP privada):
+        <%@ include file="WEB-INF/jspf/seguridad.jspf" %>  (ó ruta relativa según carpeta)
+        actualiza: session.setAttribute("__rolesRequeridos", new String[]{"admin"});  y la variable __tieneAcceso
+--%>
+<%@ page import="java.util.List" %>
+<%
+    String __usuario = (String) session.getAttribute("usuarioLogueado");
+    boolean __tieneAcceso = false;
+    if (__usuario != null) {
+        String[] __rolesReq = (String[]) session.getAttribute("__rolesRequeridos");
+        List<String> __roles = (List<String>) session.getAttribute("usuarioRoles");
+        __tieneAcceso = true;
+        if (__rolesReq != null && __rolesReq.length > 0) {
+            __tieneAcceso = __roles != null;
+            for (String r : __rolesReq) {
+                if (!__roles.contains(r)) { __tieneAcceso = false; break; }
+            }
+            session.removeAttribute("__rolesRequeridos");
+        }
+    }
+    if (!__tieneAcceso) {
+        response.sendRedirect("../../acceso.jsp");
+        return;
+    }
+%>

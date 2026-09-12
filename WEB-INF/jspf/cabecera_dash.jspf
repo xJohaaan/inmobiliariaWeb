@@ -1,0 +1,41 @@
+<%--
+    cabecera_dash.jspf: navbar común de los paneles.
+    Uso: <%@ include file="WEB-INF/jspf/cabecera_dash.jspf" %>
+    Requiere: sesión activa y variable __tituloPanel (String).
+--%>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= __tituloPanel %> - Inmobiliaria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="<%= request.getContextPath() %>/css/estilos.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-inmo-oscura shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="<%= request.getContextPath() %>/index.jsp"><i class="bi bi-building-check"></i> Inmobiliaria</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navPanel" aria-controls="navPanel" aria-expanded="false" aria-label="Abrir menú">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navPanel">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="index.jsp"><i class="bi bi-speedometer2"></i> Inicio</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <%= session.getAttribute("usuarioLogueado") %>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="<%= request.getContextPath() %>/logout.jsp">Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<main class="container-fluid container-lg my-4 flex-grow-1">
+    <h3 class="mb-4"><%= __tituloPanel %></h3>

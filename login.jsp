@@ -61,7 +61,12 @@
                     psRoles.close();
                     session.setAttribute("usuarioRoles", roles);
 
-                    response.sendRedirect("index.jsp");
+                    // Redirección automática según el rol asignado
+                    String destino = "index.jsp";
+                    if (roles.contains("admin")) destino = "admin/index.jsp";
+                    else if (roles.contains("agente")) destino = "agente/index.jsp";
+                    else if (roles.contains("cliente")) destino = "cliente/index.jsp";
+                    response.sendRedirect(destino);
                     return;
                 }
             }
@@ -85,16 +90,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - Inmobiliaria</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; }
-        .contenedor { max-width: 440px; margin: 60px auto; }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="css/estilos.css" rel="stylesheet">
 </head>
-<body>
-    <div class="contenedor">
-        <div class="card shadow">
-            <div class="card-body p-4">
-                <h2 class="text-center mb-4">Ingresar al Sistema</h2>
+<body class="page-auth">
+    <div class="card card-auth">
+        <div class="card-body p-4">
+            <a class="auth-logo" href="index.jsp"><i class="bi bi-building-check"></i> Inmobiliaria Arco Real</a>
+            <h2 class="text-center mb-4 fs-4">Ingresar al Sistema</h2>
 
                 <% if (error != null) { %>
                     <div class="alert alert-danger"><%= error %></div>
@@ -114,6 +117,5 @@
                 <p class="text-center mt-3 mb-0">¿No tienes cuenta? <a href="registro.jsp">Regístrate aquí</a></p>
             </div>
         </div>
-    </div>
 </body>
 </html>
