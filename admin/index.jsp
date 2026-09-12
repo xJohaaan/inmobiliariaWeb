@@ -45,9 +45,9 @@
     </div>
     <div class="col-12 col-md-3">
         <div class="card text-bg-success shadow-sm h-100"><div class="card-body">
-            <i class="bi bi-speedometer2 display-4"></i>
-            <h5 class="mt-2">Visión general</h5>
-            <a href="catalogos.jsp" class="text-white">Configurar sistema</a>
+            <i class="bi bi-graph-up display-4"></i>
+            <h5 class="mt-2">Reportes</h5>
+            <a href="reportes_propiedades.jsp" class="text-white">Propiedades por ciudad y estado</a>
         </div></div>
     </div>
 </div>
