@@ -6,7 +6,8 @@
 <%@ include file="../../WEB-INF/jspf/seguridad.jspf" %>
 <%@ include file="../../WEB-INF/jspf/conexion.jspf" %>
 <%
-    int nProps = 0, nCitPend = 0, nSolicRev = 0;
+    int nProps = 0, nCitPend = 0, nSolicRev = 0, nMsj = 0;
+    int idUsrA = ((Integer) session.getAttribute("idUsuario")).intValue();
     Connection con = null;
     try {
         con = obtenerConexion();
@@ -16,13 +17,15 @@
         ResultSet r2 = p2.executeQuery(); if (r2.next()) nCitPend = r2.getInt(1); r2.close(); p2.close();
         PreparedStatement p3 = con.prepareStatement("SELECT COUNT(*) FROM solicitud WHERE estado='En revisión'");
         ResultSet r3 = p3.executeQuery(); if (r3.next()) nSolicRev = r3.getInt(1); r3.close(); p3.close();
+        PreparedStatement p4 = con.prepareStatement("SELECT COALESCE(SUM(leido=0),0) FROM mensaje WHERE id_destinatario=?");
+        p4.setInt(1, idUsrA); ResultSet r4 = p4.executeQuery(); if (r4.next()) nMsj = r4.getInt(1); r4.close(); p4.close();
     } catch (Exception e) { e.printStackTrace(); } finally { cerrarConexion(con); }
     String __tituloPanel = "Panel de la Inmobiliaria (Agente)";
 %>
 <%@ include file="../../WEB-INF/jspf/cabecera_dash.jspf" %>
 
 <div class="row g-4">
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-3">
         <div class="card text-bg-primary shadow-sm h-100">
             <div class="card-body">
                 <i class="bi bi-building display-4"></i>
@@ -31,7 +34,7 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-3">
         <div class="card text-bg-warning shadow-sm h-100">
             <div class="card-body">
                 <i class="bi bi-calendar-week display-4"></i>
@@ -40,12 +43,21 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-3">
         <div class="card text-bg-info shadow-sm h-100">
             <div class="card-body">
                 <i class="bi bi-inboxes display-4"></i>
                 <h5 class="mt-2"><%= nSolicRev %> solicitudes en revisión</h5>
                 <a href="solicitudes.jsp" class="text-white">Revisar solicitudes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card text-bg-secondary shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-chat-dots display-4"></i>
+                <h5 class="mt-2"><%= nMsj %> mensajes <% if (nMsj > 0) { %><span class="badge rounded-pill text-bg-danger ms-1"><%= nMsj %> nuevos</span><% } %></h5>
+                <a href="mensajes.jsp" class="text-white">Ver mensajes</a>
             </div>
         </div>
     </div>

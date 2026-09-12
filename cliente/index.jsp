@@ -7,7 +7,7 @@
 <%@ include file="../../WEB-INF/jspf/conexion.jspf" %>
 <%
     int idUsr = ((Integer) session.getAttribute("idUsuario")).intValue();
-    int nFav = 0, nCitas = 0, nSolic = 0;
+    int nFav = 0, nCitas = 0, nSolic = 0, nMsj = 0;
     String nombrePerfil = "";
     Connection con = null;
     try {
@@ -22,6 +22,8 @@
         p4.setInt(1, idUsr); ResultSet r4 = p4.executeQuery();
         if (r4.next()) nombrePerfil = r4.getString(1) + " " + r4.getString(2);
         r4.close(); p4.close();
+        PreparedStatement p5 = con.prepareStatement("SELECT COALESCE(SUM(leido=0),0) FROM mensaje WHERE id_destinatario=?");
+        p5.setInt(1, idUsr); ResultSet r5 = p5.executeQuery(); if (r5.next()) nMsj = r5.getInt(1); r5.close(); p5.close();
     } catch (Exception e) { e.printStackTrace(); } finally { cerrarConexion(con); }
     String __tituloPanel = "Panel del Cliente";
 %>
@@ -35,7 +37,7 @@
 <% } %>
 
 <div class="row g-4">
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-3">
         <div class="card text-bg-primary shadow-sm h-100">
             <div class="card-body">
                 <i class="bi bi-heart-fill display-4"></i>
@@ -44,7 +46,7 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-3">
         <div class="card text-bg-success shadow-sm h-100">
             <div class="card-body">
                 <i class="bi bi-calendar-check display-4"></i>
@@ -53,12 +55,21 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-3">
         <div class="card text-bg-dark shadow-sm h-100">
             <div class="card-body">
                 <i class="bi bi-file-earmark-text display-4"></i>
                 <h5 class="mt-2"><%= nSolic %> solicitudes</h5>
                 <a href="mis_solicitudes.jsp" class="text-white">Ver trámites</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card text-bg-secondary shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-chat-dots display-4"></i>
+                <h5 class="mt-2"><%= nMsj %> mensajes <% if (nMsj > 0) { %><span class="badge rounded-pill text-bg-danger ms-1"><%= nMsj %> nuevos</span><% } %></h5>
+                <a href="mensajes.jsp" class="text-white">Ver mensajes</a>
             </div>
         </div>
     </div>

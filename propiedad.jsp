@@ -135,6 +135,7 @@
                         </div>
                     </form>
                     <a href="cliente/radicar_solicitud.jsp?id=<%= idProp %>" class="btn btn-outline-success"><i class="bi bi-file-earmark-arrow-up"></i> Radicar solicitud (compra/arriendo)</a>
+                    <a href="cliente/mensajes.jsp?prop=<%= idProp %>" class="btn btn-outline-secondary"><i class="bi bi-chat-dots"></i> Contactar por mensaje</a>
                 </div>
             <% } else if (estado != null && estado.equals("Disponible")) { %>
                 <div class="alert alert-secondary mt-3">

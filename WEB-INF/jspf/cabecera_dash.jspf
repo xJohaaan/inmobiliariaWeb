@@ -23,6 +23,15 @@
         <div class="collapse navbar-collapse" id="navPanel">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="index.jsp"><i class="bi bi-speedometer2"></i> Inicio</a></li>
+                <%
+                    java.util.List<String> rolesNav = (java.util.List<String>) session.getAttribute("usuarioRoles");
+                    String rutaMensajes = "";
+                    if (rolesNav != null && rolesNav.contains("cliente")) rutaMensajes = request.getContextPath() + "/cliente/mensajes.jsp";
+                    else if (rolesNav != null && rolesNav.contains("agente")) rutaMensajes = request.getContextPath() + "/agente/mensajes.jsp";
+                    if (!rutaMensajes.isEmpty()) {
+                %>
+                <li class="nav-item"><a class="nav-link" href="<%= rutaMensajes %>"><i class="bi bi-chat-dots"></i> Mensajes</a></li>
+                <% } %>
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
