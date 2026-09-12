@@ -59,9 +59,9 @@
             <div class="mb-3">
                 <label class="form-label">Documentos a radicar</label>
                 <div class="row g-2" id="filaDocs">
-                    <div class="col-12"><input type="file" name="documentos" class="form-control" accept=".pdf,.jpg,.jpeg,.png"></div>
-                    <div class="col-12"><input type="file" name="documentos" class="form-control" accept=".pdf,.jpg,.jpeg,.png"></div>
-                    <div class="col-12"><input type="file" name="documentos" class="form-control" accept=".pdf,.jpg,.jpeg,.png"></div>
+                    <div class="col-12"><input type="file" name="documentos" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.txt"></div>
+                    <div class="col-12"><input type="file" name="documentos" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.txt"></div>
+                    <div class="col-12"><input type="file" name="documentos" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.txt"></div>
                 </div>
                 <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="agregarInputFile()"><i class="bi bi-plus-circle"></i> Agregar otro archivo</button>
             </div>
@@ -78,7 +78,7 @@
         if (fila.querySelectorAll('input[type=file]').length >= 4) { alert('Máximo 4 archivos'); return; }
         var div = document.createElement('div');
         div.className = 'col-12';
-        div.innerHTML = '<input type="file" name="documentos" class="form-control" accept=".pdf,.jpg,.jpeg,.png">';
+        div.innerHTML = '<input type="file" name="documentos" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.txt">';
         fila.appendChild(div);
     }
 </script>

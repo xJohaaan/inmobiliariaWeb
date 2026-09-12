@@ -1,7 +1,7 @@
 <%@ page import="java.sql.*" %>
 <%!
     // ====== CONFIGURACION DE LA BASE DE DATOS (centralizada, solo se edita aqui) ======
-    private static final String BD_URL = "jdbc:mysql://localhost:3306/inmobiliaria_db?useSSL=false&serverTimezone=UTC";
+    private static final String BD_URL = "jdbc:mysql://localhost:3306/inmobiliaria_db?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci";
     private static final String BD_USER = "root";
     private static final String BD_PASS = "Sneyder_321";
     private static final String BD_DRIVER = "com.mysql.cj.jdbc.Driver";
