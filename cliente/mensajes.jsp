@@ -139,7 +139,7 @@
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <div>
                     <strong><i class="bi bi-person-circle"></i> <%= nomOtro %></strong>
-                    <a href="propiedad.jsp?id=<%= prop %>" class="ms-2 small text-decoration-none"><i class="bi bi-house-door"></i> <%= tituloProp %></a>
+                    <a href="<%= request.getContextPath() %>/propiedad.jsp?id=<%= prop %>" class="ms-2 small text-decoration-none"><i class="bi bi-house-door"></i> <%= tituloProp %></a>
                 </div>
                 <a href="mensajes.jsp" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Volver</a>
             </div>
@@ -235,7 +235,7 @@
                 %>
                         <tr>
                             <td><i class="bi bi-person-circle"></i> <%= etq %><br><small class="text-secondary"><%= rs.getString("correo") %></small></td>
-                            <td><a href="propiedad.jsp?id=<%= rs.getInt("id_propiedad") %>" class="text-decoration-none"><%= rs.getString("titulo_publicacion") %></a></td>
+                            <td><a href="<%= request.getContextPath() %>/propiedad.jsp?id=<%= rs.getInt("id_propiedad") %>" class="text-decoration-none"><%= rs.getString("titulo_publicacion") %></a></td>
                             <td><% if (nueva > 0) { %><span class="badge rounded-pill text-bg-danger"><%= nueva %></span><% } else { %><span class="badge rounded-pill text-bg-secondary">0</span><% } %></td>
                             <td class="text-end">
                                 <a href="mensajes.jsp?con=<%= rs.getInt("otro") %>&amp;prop=<%= rs.getInt("id_propiedad") %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-chat-left-text"></i> Abrir</a>
